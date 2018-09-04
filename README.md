@@ -1,6 +1,6 @@
 # Simple ES6-based pub-sub service
 
-[![Build Status](https://img.shields.io/travis/flekschas/pub-sub/master.svg?colorB=ff2b00)](https://travis-ci.org/flekschas/pub-sub)
+[![Build Status](https://travis-ci.org/flekschas/pub-sub.svg?branch=master)](https://travis-ci.org/flekschas/pub-sub)
 
 > A simple pub-sub service for custom events written in ES6 or whatever the latest version of EcmaScript is called.
 
