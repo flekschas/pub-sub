@@ -23,7 +23,7 @@
     "lint": "eslint src/index.js rollup.config.js",
     "prepublishOnly": "npm run lint",
     "prerelease": "rm -rf dist/*; npm run build; zip -r dist.zip dist",
-    "pretest": "npm run lint",
+    "pretest": "npm run lint; npm run build",
     "test": "node tests/index.js | tap-spec",
     "watch": "rollup -cw"
   },
