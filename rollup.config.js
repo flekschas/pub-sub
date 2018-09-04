@@ -5,6 +5,7 @@ const config = (file, format, plugins) => ({
   input: 'src/index.js',
   output: {
     name: 'createPubSub',
+    exports: 'named',
     format,
     file,
   },

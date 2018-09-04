@@ -70,6 +70,11 @@ const createPubSub = (stack = { __times__: {} }) => ({
   stack,
 });
 
-export const globalPubSub = createPubSub();
+const globalPubSub = createPubSub();
+
+export {
+  globalPubSub,
+  createPubSub,
+};
 
 export default createPubSub;
