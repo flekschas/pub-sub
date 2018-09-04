@@ -1,3 +1,4 @@
 dist/*
+dist.zip
 npm-debug.log
 node_modules/*
