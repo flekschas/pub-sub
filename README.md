@@ -20,13 +20,13 @@ const pubSub = createPubSub();
 
 // Subscribe to an event
 const myEmojiEventHandler = msg => console.log(`🎉 ${msg} 😍`);
-pubSub.on('my-emoji-event', myEmojifiedEventHandler);
+pubSub.on('my-emoji-event', myEmojiEventHandler);
 
 // Publish an event
 pubSub.publish('my-emoji-event', 'Yuuhuu');  // >> 🎉 Yuuhuu 😍
 
 // Unsubscribe
-pubSub.unsubscribe('my-emoji-event', myEmojifiedEventHandler);
+pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 ```
 
 ## API
