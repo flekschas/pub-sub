@@ -63,12 +63,16 @@ const publish = stack => (event, news) => {
   });
 };
 
-const createPubSub = (stack = { __times__: {} }) => ({
-  publish: publish(stack),
-  subscribe: subscribe(stack),
-  unsubscribe: unsubscribe(stack),
-  stack,
-});
+const createPubSub = (stack = { __times__: {} }) => {
+  if (!stack.__times__) stack.__times__ = {};
+
+  return {
+    publish: publish(stack),
+    subscribe: subscribe(stack),
+    unsubscribe: unsubscribe(stack),
+    stack,
+  };
+};
 
 const globalPubSub = createPubSub();
 

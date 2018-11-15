@@ -126,3 +126,13 @@ test('global pub-sub service', (t) => {
 
   createPubSub.globalPubSub.publish(globalEventName);
 });
+
+test('allows custom event stack and sets __times__ if necessary', (t) => {
+  t.plan(2);
+
+  const myStack = {};
+  const pubSub = createPubSub.default(myStack);
+
+  t.ok(pubSub.stack === myStack, '`myStack` should be the event stack');
+  t.ok(pubSub.stack.__times__, 'event stack should be the `__times__` prop');
+});
