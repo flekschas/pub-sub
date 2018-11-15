@@ -18,14 +18,17 @@ test('publishes and subscribes to event', (t) => {
   const pubSub = createPubSub.default();
   const eventName = 'my-event';
 
-  pubSub.subscribe(eventName, x => t.ok(x));
+  pubSub.subscribe(eventName, x => t.ok(x, 'event should publish data'));
   pubSub.publish(eventName, true);
 
-  t.ok(pubSub.stack[eventName].length === 1);
+  t.ok(
+    pubSub.stack[eventName].length === 1,
+    'event stack should have 1 lsietener'
+  );
 });
 
 test('creates independent pub-sub stacks', (t) => {
-  t.plan(4);
+  t.plan(7);
 
   const pubSubA = createPubSub.default();
   const pubSubB = createPubSub.default();
@@ -35,21 +38,30 @@ test('creates independent pub-sub stacks', (t) => {
   let counterA = 0;
   let counterB = 0;
 
+  t.ok(pubSubA.stack !== counterB.stack, 'event stacks should not be the same');
+
   pubSubA.subscribe(eventName, () => ++counterA);
   pubSubB.subscribe(eventName, () => ++counterB);
 
   pubSubA.publish(eventName);
   pubSubA.publish(eventName);
-  pubSubA.publish(eventName);
+
+  t.ok(counterA === 2, 'counter A should be 2');
+  t.ok(counterB === 0, 'counter A should be 0');
 
   pubSubB.publish(eventName);
-  pubSubB.publish(eventName);
 
-  t.ok(counterA === 3);
-  t.ok(counterB === 2);
+  t.ok(counterA === 2, 'counter A should be 2');
+  t.ok(counterB === 1, 'counter A should be 1');
 
-  t.ok(pubSubA.stack[eventName].length === 1);
-  t.ok(pubSubB.stack[eventName].length === 1);
+  t.ok(
+    pubSubA.stack[eventName].length === 1,
+    'event stack A should have 1 listener'
+  );
+  t.ok(
+    pubSubB.stack[eventName].length === 1,
+    'event stack B should have 1 listener'
+  );
 });
 
 test('unsubscribes from event', (t) => {
@@ -71,8 +83,8 @@ test('unsubscribes from event', (t) => {
 
   pubSub.publish(eventName);
 
-  t.ok(counter === 2);
-  t.ok(pubSub.stack[eventName].length === 0);
+  t.ok(counter === 2, 'should have encountered 2 events');
+  t.ok(pubSub.stack[eventName].length === 0, 'event stack should be empty');
 });
 
 test('automatically unsubscribes after n events', (t) => {
@@ -91,21 +103,26 @@ test('automatically unsubscribes after n events', (t) => {
   pubSub.publish(eventName);
   pubSub.publish(eventName);
 
-  t.ok(counter === 2);
-  t.ok(pubSub.stack[eventName].length === 0);
+  t.ok(counter === 2, 'should have encountered 2 events');
+  t.ok(pubSub.stack[eventName].length === 0, 'event stack should be empty');
 });
 
 test('global pub-sub service', (t) => {
   t.plan(3);
 
   // Check the beginning of this file. We've already fired a global event twice
-  t.ok(globalCounter === 2);
+  t.ok(globalCounter === 2, 'should have encountered 2 global events already');
 
-  const eventHandler = () => t.ok(globalCounter === 3);
+  const eventHandler = () => t.ok(
+    globalCounter === 3, 'should have encountered 3 global events'
+  );
 
   createPubSub.globalPubSub.subscribe(globalEventName, eventHandler, 2);
 
-  t.ok(createPubSub.globalPubSub.stack[globalEventName].length === 2);
+  t.ok(
+    createPubSub.globalPubSub.stack[globalEventName].length === 2,
+    'the global event should have 2 listeners'
+  );
 
   createPubSub.globalPubSub.publish(globalEventName);
 });
