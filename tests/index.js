@@ -1,6 +1,6 @@
 const test = require('tape');
 
-const createPubSub = require('../dist/pub-sub-es');
+const createPubSub = require('../src/index');
 
 let globalCounter = 0;
 
@@ -98,6 +98,7 @@ test('automatically unsubscribes after n events', (t) => {
 test('global pub-sub service', (t) => {
   t.plan(3);
 
+  // Check the beginning of this file. We've already fired a global event twice
   t.ok(globalCounter === 2);
 
   const eventHandler = () => t.ok(globalCounter === 3);

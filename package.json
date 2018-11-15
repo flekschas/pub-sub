@@ -24,7 +24,7 @@
     "prepublishOnly": "npm run lint",
     "prerelease": "rm -rf dist/*; npm run build; zip -r dist.zip dist",
     "pretest": "npm run lint; npm run build",
-    "test": "node tests/index.js | tap-spec",
+    "test": "node -r esm tests/index.js | tap-spec",
     "test-coverage": "istanbul cover tape tests/index.js",
     "watch": "rollup -cw"
   },
@@ -34,6 +34,7 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.1",
+    "esm": "^3.0.84",
     "istanbul": "^0.4.5",
     "rollup": "^0.64.1",
     "rollup-plugin-buble": "^0.19.2",
