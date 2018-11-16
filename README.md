@@ -3,10 +3,13 @@
 [![npm version](https://img.shields.io/npm/v/pub-sub-es.svg)](https://www.npmjs.com/package/pub-sub-es)
 [![stability experimental](https://img.shields.io/badge/stability-stable-green.svg)](https://nodejs.org/api/documentation.html#documentation_stability_index)
 [![build status](https://travis-ci.org/flekschas/pub-sub.svg?branch=master)](https://travis-ci.org/flekschas/pub-sub)
-[![gzipped size](https://img.shields.io/badge/gzipped%20size-0.5%20KB-6ae3c7.svg)](https://unpkg.com/pub-sub-es)
+[![gzipped size](https://img.shields.io/badge/gzipped%20size-0.6%20KB-6ae3c7.svg)](https://unpkg.com/pub-sub-es)
 [![code style prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![demo](https://img.shields.io/badge/demo-online-fcff69.svg)](http://pub-sub.lekschas.de)
 
-> A simple pub-sub service for custom events written in ES6 or whatever the latest version of EcmaScript is called.
+> A simple 0.6KB [pub-sub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)-based event library that lets you send custom message within and cross the window! It's written in ES6 and makes use of the awesome [Broadcast Channel API](https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API).
+
+**Demo:** [pub-sub.lekschas.de](http://pub-sub.lekschas.de)
 
 ## Install
 
