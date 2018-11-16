@@ -15,6 +15,9 @@
   "plugins": [
     "prettier"
   ],
+  "globals": {
+    "BroadcastChannel": false
+  },
   "rules": {
     "comma-dangle": 0,
     "prefer-destructuring": 0,

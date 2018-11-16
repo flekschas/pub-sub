@@ -1,6 +1,7 @@
 ### v1.1.0
 
 - Expand global communication across windows
+- Add a demo page
 
 ### v1.0.2
 
