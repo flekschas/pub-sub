@@ -16,7 +16,7 @@ const subscribe = stack => (event, handler, times = Infinity) => {
   }
 
   stack[event].push(handler);
-  stack.__times__[event].push(parseInt(times, 10) || Infinity);
+  stack.__times__[event].push(+times || Infinity);
 
   return { event, handler };
 };
@@ -32,7 +32,7 @@ const subscribe = stack => (event, handler, times = Infinity) => {
 const unsubscribe = stack => (event, handler) => {
   if (!stack[event]) return;
 
-  if (typeof event === 'object') {
+  if (typeof event === "object") {
     event = event.event; // eslint-disable-line no-param-reassign
     handler = event.handler; // eslint-disable-line no-param-reassign
   }
@@ -59,7 +59,8 @@ const publish = stack => (event, news) => {
 
   stack[event].forEach((listener, i) => {
     listener(news);
-    if (!(stack.__times__[event][i] -= 1)) unsubscriber(event, listener);  // eslint-disable-line
+    stack.__times__[event][i]--;
+    if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
   });
 };
 
@@ -70,15 +71,12 @@ const createPubSub = (stack = { __times__: {} }) => {
     publish: publish(stack),
     subscribe: subscribe(stack),
     unsubscribe: unsubscribe(stack),
-    stack,
+    stack
   };
 };
 
 const globalPubSub = createPubSub();
 
-export {
-  globalPubSub,
-  createPubSub,
-};
+export { globalPubSub, createPubSub };
 
 export default createPubSub;
