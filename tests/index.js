@@ -1,21 +1,35 @@
+const BroadcastChannel = require("broadcast-channel");
+const browserEnv = require("browser-env");
 const test = require("tape");
 
-const createPubSub = require("../src/index");
+browserEnv();
+
+let globalChannel;
+window.BroadcastChannel = function FakeBroadcastChannel(channelName) {
+  globalChannel = new BroadcastChannel(channelName);
+  return globalChannel;
+};
+
+// Note, in the following ES6's import doesn't work. Somehow `window` is then
+// not available.
+const pubSubEs = require("../src/index");
+
+const { createPubSub, globalPubSub } = pubSubEs;
 
 let globalCounter = 0;
 
 const globalEventName = "my-global-event";
 const globalEventHandler = () => ++globalCounter;
 
-createPubSub.globalPubSub.subscribe(globalEventName, globalEventHandler);
+globalPubSub.subscribe(globalEventName, globalEventHandler);
 
-createPubSub.globalPubSub.publish(globalEventName);
-createPubSub.globalPubSub.publish(globalEventName);
+globalPubSub.publish(globalEventName);
+globalPubSub.publish(globalEventName);
 
 test("publishes and subscribes to event", t => {
   t.plan(2);
 
-  const pubSub = createPubSub.default();
+  const pubSub = createPubSub();
   const eventName = "my-event";
 
   pubSub.subscribe(eventName, x => t.ok(x, "event should publish data"));
@@ -30,8 +44,8 @@ test("publishes and subscribes to event", t => {
 test("creates independent pub-sub stacks", t => {
   t.plan(7);
 
-  const pubSubA = createPubSub.default();
-  const pubSubB = createPubSub.default();
+  const pubSubA = createPubSub();
+  const pubSubB = createPubSub();
 
   const eventName = "count";
 
@@ -67,7 +81,7 @@ test("creates independent pub-sub stacks", t => {
 test("unsubscribes from event", t => {
   t.plan(2);
 
-  const pubSub = createPubSub.default();
+  const pubSub = createPubSub();
 
   let counter = 0;
 
@@ -90,7 +104,7 @@ test("unsubscribes from event", t => {
 test("automatically unsubscribes after n events", t => {
   t.plan(2);
 
-  const pubSub = createPubSub.default();
+  const pubSub = createPubSub();
 
   let counter = 0;
 
@@ -116,22 +130,25 @@ test("global pub-sub service", t => {
   const eventHandler = () =>
     t.ok(globalCounter === 3, "should have encountered 3 global events");
 
-  createPubSub.globalPubSub.subscribe(globalEventName, eventHandler, 2);
+  globalPubSub.subscribe(globalEventName, eventHandler, 2);
 
   t.ok(
-    createPubSub.globalPubSub.stack[globalEventName].length === 2,
+    globalPubSub.stack[globalEventName].length === 2,
     "the global event should have 2 listeners"
   );
 
-  createPubSub.globalPubSub.publish(globalEventName);
+  globalPubSub.publish(globalEventName);
 });
 
 test("allows custom event stack and sets __times__ if necessary", t => {
   t.plan(2);
 
   const myStack = {};
-  const pubSub = createPubSub.default(myStack);
+  const pubSub = createPubSub(myStack);
 
   t.ok(pubSub.stack === myStack, "`myStack` should be the event stack");
   t.ok(pubSub.stack.__times__, "event stack should be the `__times__` prop");
+
+  // A hack to properly close the test runner.
+  globalChannel.close();
 });

@@ -1,3 +1,5 @@
+const bc = new window.BroadcastChannel("pub-sub-es");
+
 /**
  * Subscribe to an event.
  * @param {string} event - Event name to subscribe to.
@@ -52,7 +54,7 @@ const unsubscribe = stack => (event, handler) => {
  * @param {string} event - Event type to be published.
  * @param {any} news - The news to be published.
  */
-const publish = stack => (event, news) => {
+const publish = (stack, isGlobal) => (event, news, isNoGlobalBroadcast) => {
   if (!stack[event]) return;
 
   const unsubscriber = unsubscribe(stack);
@@ -62,9 +64,13 @@ const publish = stack => (event, news) => {
     stack.__times__[event][i]--;
     if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
   });
+
+  if (isGlobal && !isNoGlobalBroadcast) bc.postMessage({ event, news });
 };
 
-const createPubSub = (stack = { __times__: {} }) => {
+const createEmptyStack = () => ({ __times__: {} });
+
+const createPubSub = (stack = createEmptyStack()) => {
   if (!stack.__times__) stack.__times__ = {};
 
   return {
@@ -75,7 +81,16 @@ const createPubSub = (stack = { __times__: {} }) => {
   };
 };
 
-const globalPubSub = createPubSub();
+// Setup global pub-sub
+const globalPubSubStack = createEmptyStack();
+const globalPubSub = {
+  publish: publish(globalPubSubStack, true),
+  subscribe: subscribe(globalPubSubStack),
+  unsubscribe: unsubscribe(globalPubSubStack),
+  stack: globalPubSubStack
+};
+bc.onmessage = ({ data: { event, news } }) =>
+  globalPubSub.publish(event, news, true);
 
 export { globalPubSub, createPubSub };
 

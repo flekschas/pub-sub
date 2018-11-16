@@ -1,3 +1,7 @@
+### v1.1.0
+
+- Expand global communication across windows
+
 ### v1.0.2
 
 - Prettify code and fix doc typos
