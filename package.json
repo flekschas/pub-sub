@@ -13,6 +13,8 @@
   "license": "MIT",
   "main": "dist/pub-sub-es.js",
   "module": "src/index.js",
+  "unpkg": "dist/pub-sub-es.min.js",
+  "jsdelivr": "dist/pub-sub-es.min.js",
   "files": [
     "src/index.js",
     "dist/pub-sub-es.js",
