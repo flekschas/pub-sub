@@ -23,7 +23,7 @@ test("publishes and subscribes to event", t => {
 
   t.ok(
     pubSub.stack[eventName].length === 1,
-    "event stack should have 1 lsietener"
+    "event stack should have 1 listener"
   );
 });
 
