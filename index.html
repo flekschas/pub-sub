@@ -1,0 +1,188 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>PubSubES - Global </title>
+  <meta name="description" content="Scalable WebGL-based Scatterplot for millions of points build with Regl">
+  <meta name="author" content="Fritz Lekschas">
+
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,600,900" rel="stylesheet">
+
+  <style type="text/css">
+    html, body {
+      padding: 0;
+      margin: 0 auto;
+      max-width: 50rem;
+      font-family: 'Raleway', sans-serif;
+      font-size: 16px;
+      text-rendering: optimizeLegibility;
+      line-height: 1.5;
+      color: black;
+      background: white;
+    }
+
+    h1 {
+      margin: 4rem 0 2rem 0;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 2rem 0 1rem 0;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+
+    h3 {
+      margin: 2rem 0 1rem 0;
+      font-size: 1.25em;
+      font-weight: 600;
+    }
+
+    a {
+      color: black;
+    }
+
+    a:active,
+    a:focus,
+    a:hover {
+      animation: color-link 0.5s ease forwards;
+    }
+
+    abbr {
+      text-decoration: none;
+      border-bottom: 0;
+    }
+
+    form {
+      display: flex;
+    }
+
+    input {
+      flex-grow: 1;
+      padding: 0 0.25em;
+      border: 1px solid black;
+      border-right: 0;
+      border-radius: 0.25rem 0 0 0.25rem;
+      font-size: 1em;
+      line-height: 1.5em;
+    }
+
+    button {
+      width: 9rem;
+      color: black;
+      color: white;
+      font-size: 1em;
+      line-height: 1.5em;
+      border-color: black;
+      background: black;
+    }
+    #send-globally {
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
+
+    #send-locally:active,
+    #send-locally:focus,
+    #send-locally:hover {
+      animation: color-button-locally 0.5s ease forwards;
+    }
+
+    #send-globally:active,
+    #send-globally:focus,
+    #send-globally:hover {
+      animation: color-button-globally 0.5s ease forwards;
+    }
+
+    ol {
+      padding: 0;
+      list-style: none;
+    }
+
+    ol li {
+      line-height: 2em;
+    }
+
+    li.is-local:before,
+    li.is-global:before {
+      content: 'Local';
+      margin-right: 0.8rem;
+      padding: 0.25rem;
+      min-width: 5rem;
+      font-size: 0.8em;
+      line-height: 1.25em;
+      text-transform: uppercase;
+      text-align: center;
+      color: white;
+      background: #006dff;
+      border-radius: 0.25rem;
+    }
+
+    li.is-global:before {
+      content: 'Global';
+      margin-right: 0.25rem;
+      background: #00bfbf;
+    }
+
+    @keyframes color-link {
+      0% {
+        color: black;
+      }
+      20% {
+        color: #00a3ec;
+      }
+      100% {
+        color: #006dff;
+      }
+    }
+
+    @keyframes color-button-locally {
+      0% {
+        border-color: black;
+        background: black;
+      }
+      20% {
+        border-color: #00a3ec;
+        background: #00a3ec;
+      }
+      100% {
+        border-color: #006dff;
+        background: #006dff;
+      }
+    }
+
+    @keyframes color-button-globally {
+      0% {
+        border-color: black;
+        background: black;
+      }
+      20% {
+        border-color: #00e5bf;
+        background: #00e5bf;
+      }
+      100% {
+        border-color: #00bfbf;
+        background: #00bfbf;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>PubSubES &ndash; a tiny JavaScript library for broadcasting events within and cross windows.</h1>
+
+  <p><a href="https://github.com/flekschas/pub-sub" target="_blank">PubSubES</a> is a 0.6<abbr title="kilobyte">KB</abbr> heavy library for managing custom events within and cross windows. It is written in ES6 and makes use the new awesome <a href="https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API" target=_blank>Broadcast Channel API</a>. Test it below by either sending out a message. To see the effect of global events <a href="." target="_blank">open this page in a new window</a>. Check out the <a href="https://github.com/flekschas/pub-sub#get-started" target="_blank">getting started guide</a> and the <a href="https://github.com/flekschas/pub-sub#api" target="_blank">API docs</a> for details on how to use PubSubES.</p>
+
+  <h2>Send an event</h2>
+  <form>
+    <input id="message" placeholder="Write a message" value="Some event">
+    <button id="send-locally">Send locally</button>
+    <button id="send-globally">Send globally</button>
+  </form>
+
+  <h3>Messages</h3>
+  <ol id="messages">
+  </ol>
+<script type="text/javascript" src="./example.js"></script></body>
+</html>
