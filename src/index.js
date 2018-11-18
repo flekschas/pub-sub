@@ -1,4 +1,11 @@
-const bc = new window.BroadcastChannel("pub-sub-es");
+const bc = (() => {
+  const BC = window.BroadcastChannel;
+  if (!BC) {
+    console.warn("The Broadcast Channel API is not available in your browser.");
+    return { postMessage: () => {} };
+  }
+  return new BC("pub-sub-es");
+})();
 
 /**
  * Subscribe to an event.
@@ -71,7 +78,6 @@ const publish = (stack, isGlobal) => (event, news, isNoGlobalBroadcast) => {
     } catch (error) {
       if (error instanceof DOMException) {
         console.warn(
-          // eslint-disable-line
           `Could not broadcast "${event}" globally. Payload is not clonable.`
         );
       } else {
