@@ -65,7 +65,20 @@ const publish = (stack, isGlobal) => (event, news, isNoGlobalBroadcast) => {
     if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
   });
 
-  if (isGlobal && !isNoGlobalBroadcast) bc.postMessage({ event, news });
+  if (isGlobal && !isNoGlobalBroadcast) {
+    try {
+      bc.postMessage({ event, news });
+    } catch (error) {
+      if (error instanceof DOMException) {
+        console.warn(
+          // eslint-disable-line
+          `Could not broadcast "${event}" globally. Payload is not clonable.`
+        );
+      } else {
+        throw error;
+      }
+    }
+  }
 };
 
 const createEmptyStack = () => ({ __times__: {} });

@@ -1,3 +1,7 @@
+### v1.1.1
+
+- Catch exceptions on broadcasting with `BroadcastChannel`
+
 ### v1.1.0
 
 - Expand global communication across windows
