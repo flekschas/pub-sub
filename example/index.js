@@ -1,5 +1,11 @@
 import { createPubSub, globalPubSub } from "../src";
 
+if (!window.BroadcastChannel) {
+  document.querySelector(".between-contexts").className =
+    "between-contexts active";
+  document.querySelector(".between-contexts-warning").style.display = "inline";
+}
+
 const pubSub = createPubSub();
 const messages = document.querySelector("#messages");
 
