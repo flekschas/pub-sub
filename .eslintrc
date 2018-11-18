@@ -21,6 +21,7 @@
   "rules": {
     "comma-dangle": 0,
     "prefer-destructuring": 0,
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-param-reassign": ["error", { "props": false }],
     "no-plusplus": 0,
     "no-underscore-dangle": 0
