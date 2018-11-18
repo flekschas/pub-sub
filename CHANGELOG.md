@@ -1,3 +1,7 @@
+### v1.1.2
+
+- Check if `BroadcastChannel` is available and log a warning otherwise
+
 ### v1.1.1
 
 - Catch exceptions on broadcasting with `BroadcastChannel`

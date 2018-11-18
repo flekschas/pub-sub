@@ -64,10 +64,10 @@ pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 - `event` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`. 
 - `news` is an arbitrary value that is being broadcasted.
 
-### Global pub-sub
+### Between-context messaging
 
 The global pub-sub instance is created when `pub-sub-es.js` is loaded and provides a way for
-different JS objects within the same tab to communitate with each other.
+global messaging within and between contexts. It utilizes the [Broadcast Channel API](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel), which is [currently not available in all browsers](https://caniuse.com/#feat=broadcastchannel). If you need to support more browsers you have to load a [polyfill](https://gist.github.com/alexis89x/041a8e20a9193f3c47fb). PubSubES is _not_ taking care of that! Also, when sending sending objects from one context to another you have to make sure that they are clonable. For example, trying to broadcast a reference to a DOM element will fail.
 
 ## Development
 
