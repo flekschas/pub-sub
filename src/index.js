@@ -87,6 +87,23 @@ const publish = (stack, isGlobal) => (event, news, isNoGlobalBroadcast) => {
   }
 };
 
+/**
+ * Remove all event listeners and unset listening times
+ * @curried
+ * @param {object} stack - The bound event stack.
+ * @return {function} - A function removing all event listeners.
+ */
+const clear = stack => () => {
+  Object.keys(stack)
+    .filter(eventName => eventName[0] !== "_")
+    .forEach(eventName => {
+      stack[eventName] = undefined;
+      stack.__times__[eventName] = undefined;
+      delete stack[eventName];
+      delete stack.__times__[eventName];
+    });
+};
+
 const createEmptyStack = () => ({ __times__: {} });
 
 const createPubSub = (stack = createEmptyStack()) => {
@@ -96,6 +113,7 @@ const createPubSub = (stack = createEmptyStack()) => {
     publish: publish(stack),
     subscribe: subscribe(stack),
     unsubscribe: unsubscribe(stack),
+    clear: clear(stack),
     stack
   };
 };
