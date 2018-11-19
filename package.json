@@ -51,6 +51,7 @@
     "pretty-quick": "^1.8.0",
     "rollup": "^0.67.1",
     "rollup-plugin-buble": "^0.19.4",
+    "rollup-plugin-filesize": "^5.0.1",
     "rollup-plugin-terser": "^3.0.0",
     "tap-spec": "^5.0.0",
     "tape": "^4.9.1",
