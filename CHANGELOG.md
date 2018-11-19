@@ -1,3 +1,7 @@
+### v1.2.0
+
+- Add `clear()` for removing all currently active event listeners and unsetting all event times
+
 ### v1.1.2
 
 - Check if `BroadcastChannel` is available and log a warning otherwise
