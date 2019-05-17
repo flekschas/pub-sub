@@ -57,16 +57,15 @@ const unsubscribe = stack =>
    *   ignored if `id` is provided.
    */
   (event, handler) => {
-    if (!stack[event]) return;
-
     if (typeof event === "object") {
-      event = event.event; // eslint-disable-line no-param-reassign
       handler = event.handler; // eslint-disable-line no-param-reassign
+      event = event.event; // eslint-disable-line no-param-reassign
     }
+
+    if (!stack[event]) return;
 
     const id = stack[event].indexOf(handler);
 
-    if (!stack[event]) return;
     if (id === -1 || id >= stack[event].length) return;
 
     stack[event].splice(id, 1);
