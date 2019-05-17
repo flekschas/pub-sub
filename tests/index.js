@@ -84,7 +84,7 @@ test("creates independent pub-sub stacks", t => {
 });
 
 test("unsubscribes from event", t => {
-  t.plan(2);
+  t.plan(4);
 
   const pubSub = createPubSub();
 
@@ -103,6 +103,18 @@ test("unsubscribes from event", t => {
   pubSub.publish(eventName);
 
   t.ok(counter === 2, "should have encountered 2 events");
+  t.ok(pubSub.stack[eventName].length === 0, "event stack should be empty");
+
+  const eventSubscription = pubSub.subscribe(eventName, eventHandler);
+
+  pubSub.publish(eventName);
+  pubSub.publish(eventName);
+
+  pubSub.unsubscribe(eventSubscription);
+
+  pubSub.publish(eventName);
+
+  t.ok(counter === 4, "should have encountered 4 events");
   t.ok(pubSub.stack[eventName].length === 0, "event stack should be empty");
 });
 
