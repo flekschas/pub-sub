@@ -1,3 +1,7 @@
+### v1.2.1
+
+- Fixed a bad bug when subscribing with the shorthand. Expanded the tests to cover the shorthand unsubscription.
+
 ### v1.2.0
 
 - Add `clear()` for removing all currently active event listeners and unsetting all event times
