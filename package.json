@@ -5,20 +5,21 @@
   "author": "Fritz Lekschas",
   "keywords": [
     "pub-sub",
+    "event",
     "es6",
-    "es2015",
     "publish",
     "subscribe"
   ],
   "license": "MIT",
   "main": "dist/pub-sub-es.js",
-  "module": "src/index.js",
+  "module": "dist/pub-sub-es.esm.js",
   "unpkg": "dist/pub-sub-es.min.js",
   "jsdelivr": "dist/pub-sub-es.min.js",
   "files": [
     "src/index.js",
     "dist/pub-sub-es.js",
-    "dist/pub-sub-es.min.js"
+    "dist/pub-sub-es.min.js",
+    "dist/pub-sub-es.esm.js"
   ],
   "scripts": {
     "build": "rollup -c; webpack --config ./webpack.config.js --mode production",
