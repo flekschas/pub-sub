@@ -5,10 +5,10 @@
 const bc = (() => {
   const BC = window.BroadcastChannel;
   if (!BC) {
-    console.warn("The Broadcast Channel API is not available in your browser.");
+    console.warn('The Broadcast Channel API is not available in your browser.');
     return { postMessage: () => {} };
   }
-  return new BC("pub-sub-es");
+  return new BC('pub-sub-es');
 })();
 
 /**
@@ -57,7 +57,7 @@ const unsubscribe = stack =>
    *   ignored if `id` is provided.
    */
   (event, handler) => {
-    if (typeof event === "object") {
+    if (typeof event === 'object') {
       handler = event.handler; // eslint-disable-line no-param-reassign
       event = event.event; // eslint-disable-line no-param-reassign
     }
@@ -73,6 +73,15 @@ const unsubscribe = stack =>
   };
 
 /**
+ * Inform listeners
+ * @param   {array}  listeners  List of listeners
+ * @param   {*}  news  News object
+ */
+const inform = (listeners, news) => () => {
+  listeners.forEach(listener => listener(news));
+};
+
+/**
  * Setup the publisher.
  * @param  {object} stack - The bound event stack.
  * @param  {boolean} isGlobal - If `true` event will be published globally.
@@ -85,27 +94,34 @@ const publish = (stack, isGlobal) =>
    * @curried
    * @param   {string} event - Event type to be published.
    * @param   {any} news - The news to be published.
-   * @param   {boolean}  isNoGlobalBroadcast - If `true` event will *not* be
-   *   broadcasted gloablly even if `isGlobal` is `true`.
+   * @param   {boolean}  noGlobalBroadcast - If `true` event will *not* be
+   *   broadcasted globally even if `isGlobal` is `true`.
    */
-  (event, news, isNoGlobalBroadcast) => {
+  (event, news, { sync, localBroadcast } = {}) => {
     if (!stack[event]) return;
 
     const unsubscriber = unsubscribe(stack);
 
-    stack[event].forEach((listener, i) => {
-      listener(news);
+    const listeners = [...stack[event]];
+
+    listeners.forEach((listener, i) => {
       stack.__times__[event][i]--;
       if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
     });
 
-    if (isGlobal && !isNoGlobalBroadcast) {
+    if (sync) {
+      inform(listeners, news);
+    } else {
+      setTimeout(inform(listeners, news), 0);
+    }
+
+    if (isGlobal && !localBroadcast) {
       try {
         bc.postMessage({ event, news });
       } catch (error) {
         if (error instanceof DOMException) {
           console.warn(
-            `Could not broadcast "${event}" globally. Payload is not clonable.`
+            `Could not broadcast '${event}' globally. Payload is not clonable.`
           );
         } else {
           throw error;
@@ -127,7 +143,7 @@ const clear = stack =>
    */
   () => {
     Object.keys(stack)
-      .filter(eventName => eventName[0] !== "_")
+      .filter(eventName => eventName[0] !== '_')
       .forEach(eventName => {
         stack[eventName] = undefined;
         stack.__times__[eventName] = undefined;

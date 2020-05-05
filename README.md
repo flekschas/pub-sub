@@ -30,7 +30,7 @@ const myEmojiEventHandler = msg => console.log(`🎉 ${msg} 😍`);
 pubSub.on('my-emoji-event', myEmojiEventHandler);
 
 // Publish an event
-pubSub.publish('my-emoji-event', 'Yuuhuu');  // >> 🎉 Yuuhuu 😍
+pubSub.publish('my-emoji-event', 'Yuuhuu'); // >> 🎉 Yuuhuu 😍
 
 // Unsubscribe
 pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
@@ -48,12 +48,14 @@ pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 
 **Returns:** a new pub-sub service
 
-#### `pubSub.publish(event, news)`
+#### `pubSub.publish(event, news, { sync, localBroadcast })`
 
-> Publishes or broadcasts an event with some news or payload
+> Publishes or broadcasts an event with some news/payload
 
 - `event` is the name of the event to be published.
 - `news` is an arbitrary value that is being broadcasted.
+- `sync` enforces sychronous publishing. Use with care!
+- `localBroadcast` enforces events of a global pubSub to be broadcasted locally only.
 
 #### `pubSub.subscribe(event, handler, times)`
 
@@ -69,7 +71,7 @@ pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 
 > Unsubscribes a handler from listening to an event
 
-- `event` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`. 
+- `event` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`.
 
 #### `pubSub.clear()`
 

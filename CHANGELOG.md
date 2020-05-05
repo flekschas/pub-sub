@@ -1,3 +1,10 @@
+### v2.0.0
+
+**Breaking Changes:**
+
+- Switched to _async_ publishing by default. If you need synchronous publishing do `publish(event, news, { sync: true })`
+- Replaced the third parameter of `publish` with an option object accepting `{ sync, localBroadcast }`
+
 ### v1.2.1
 
 - Fixed a bad bug when subscribing with the shorthand. Expanded the tests to cover the shorthand unsubscription.

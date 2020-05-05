@@ -6,10 +6,10 @@
   "extends": [
     "eslint:recommended",
     "airbnb/base",
-    "plugin:prettier/recommended",
+    "prettier",
   ],
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2018,
     "sourceType": "module",
   },
   "plugins": [
