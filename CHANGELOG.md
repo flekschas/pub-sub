@@ -1,3 +1,7 @@
+### v1.2.2
+
+- Fix a bug when using pub-sub-es in an iframe.
+
 ### v1.2.1
 
 - Fixed a bad bug when subscribing with the shorthand. Expanded the tests to cover the shorthand unsubscription.
