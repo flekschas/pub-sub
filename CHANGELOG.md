@@ -1,6 +1,7 @@
 ### v1.2.2
 
 - Fix a bug when using pub-sub-es in an iframe.
+- Updated third-party packages
 
 ### v1.2.1
 
