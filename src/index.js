@@ -3,12 +3,11 @@
  * @type {BroadcastChannel|object}
  */
 const bc = (() => {
-  const BC = window.BroadcastChannel;
-  if (!BC) {
-    console.warn('The Broadcast Channel API is not available in your browser.');
+  try {
+    return new window.BroadcastChannel('pub-sub-es');
+  } catch (e) {
     return { postMessage: () => {} };
   }
-  return new BC('pub-sub-es');
 })();
 
 /**
