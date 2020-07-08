@@ -5,10 +5,10 @@
 const bc = (() => {
   const BC = window.BroadcastChannel;
   if (!BC) {
-    console.warn("The Broadcast Channel API is not available in your browser.");
+    console.warn('The Broadcast Channel API is not available in your browser.');
     return { postMessage: () => {} };
   }
-  return new BC("pub-sub-es");
+  return new BC('pub-sub-es');
 })();
 
 /**
@@ -17,7 +17,7 @@ const bc = (() => {
  * @return {function} - Curried function for subscribing to an event on a
  *   specific event stack.
  */
-const subscribe = stack =>
+const subscribe = (stack) =>
   /**
    * Subscribe to an event.
    * @param {string} event - Event name to subscribe to.
@@ -47,7 +47,7 @@ const subscribe = stack =>
  * @return {function} - Curried function for unsubscribing an event from a
  *   specific event stack.
  */
-const unsubscribe = stack =>
+const unsubscribe = (stack) =>
   /**
    * Unsubscribe from event.
    * @curried
@@ -57,7 +57,7 @@ const unsubscribe = stack =>
    *   ignored if `id` is provided.
    */
   (event, handler) => {
-    if (typeof event === "object") {
+    if (typeof event === 'object') {
       handler = event.handler; // eslint-disable-line no-param-reassign
       event = event.event; // eslint-disable-line no-param-reassign
     }
@@ -105,7 +105,7 @@ const publish = (stack, isGlobal) =>
       } catch (error) {
         if (error instanceof DOMException) {
           console.warn(
-            `Could not broadcast "${event}" globally. Payload is not clonable.`
+            `Could not broadcast '${event}' globally. Payload is not clonable.`
           );
         } else {
           throw error;
@@ -120,15 +120,15 @@ const publish = (stack, isGlobal) =>
  * @return {function} - A curried function removing all event listeners on a
  *   specific event stack.
  */
-const clear = stack =>
+const clear = (stack) =>
   /**
    * Remove all event listeners and unset listening times
    * @curried
    */
   () => {
     Object.keys(stack)
-      .filter(eventName => eventName[0] !== "_")
-      .forEach(eventName => {
+      .filter((eventName) => eventName[0] !== '_')
+      .forEach((eventName) => {
         stack[eventName] = undefined;
         stack.__times__[eventName] = undefined;
         delete stack[eventName];
@@ -155,7 +155,7 @@ const createPubSub = (stack = createEmptyStack()) => {
     subscribe: subscribe(stack),
     unsubscribe: unsubscribe(stack),
     clear: clear(stack),
-    stack
+    stack,
   };
 };
 
@@ -172,7 +172,7 @@ const globalPubSub = {
   publish: publish(globalPubSubStack, true),
   subscribe: subscribe(globalPubSubStack),
   unsubscribe: unsubscribe(globalPubSubStack),
-  stack: globalPubSubStack
+  stack: globalPubSubStack,
 };
 bc.onmessage = ({ data: { event, news } }) =>
   globalPubSub.publish(event, news, true);

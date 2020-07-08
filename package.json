@@ -31,33 +31,35 @@
     "test": "node -r esm tests/index.js | tap-spec",
     "watch": "rollup -cw"
   },
+  "dependencies": {
+    "broadcast-channel": "^3.1.0"
+  },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "babel-loader": "^8.0.2",
-    "browser-env": "^3.2.5",
-    "eslint": "^5.9.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^3.3.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-prettier": "^3.0.0",
-    "eslint-plugin-react": "^7.11.1",
-    "esm": "^3.0.84",
-    "html-webpack-plugin": "^3.2.0",
-    "husky": "^1.1.2",
-    "lint-staged": "^8.0.4",
-    "prettier": "^1.15.1",
-    "pretty-quick": "^1.8.0",
-    "rollup": "^0.67.1",
-    "rollup-plugin-buble": "^0.19.4",
-    "rollup-plugin-filesize": "^5.0.1",
-    "rollup-plugin-terser": "^3.0.0",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@rollup/plugin-buble": "^0.21.3",
+    "babel-loader": "^8.1.0",
+    "browser-env": "^3.3.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "esm": "^3.2.25",
+    "html-webpack-plugin": "^4.3.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
+    "rollup": "^2.21.0",
+    "rollup-plugin-filesize": "^9.0.2",
+    "rollup-plugin-terser": "^6.1.0",
     "tap-spec": "^5.0.0",
-    "tape": "^4.9.1",
-    "webpack": "^4.17.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.7"
+    "tape": "^5.0.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   },
   "homepage": "https://github.com/flekschas/pub-sub",
   "repository": {
@@ -66,8 +68,5 @@
   },
   "bugs": {
     "url": "https://github.com/flekschas/pub-sub/issues"
-  },
-  "dependencies": {
-    "broadcast-channel": "^2.1.8"
   }
 }
