@@ -165,9 +165,6 @@ test('allows custom event stack and sets __times__ if necessary', (t) => {
 
   t.ok(pubSub.stack === myStack, '`myStack` should be the event stack');
   t.ok(pubSub.stack.__times__, 'event stack should be the `__times__` prop');
-
-  // A hack to properly close the test runner.
-  globalChannel.close();
 });
 
 test('removes all listeners on clear()', (t) => {
@@ -206,7 +203,4 @@ test('removes all listeners on clear()', (t) => {
     '`stack.__times__` should no entries anymore'
   );
   t.ok(counter === 1, 'new events should not be handled anymore');
-
-  // A hack to properly close the test runner.
-  globalChannel.close();
 });
