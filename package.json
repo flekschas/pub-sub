@@ -1,6 +1,6 @@
 {
   "name": "pub-sub-es",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A simple ES6-based pub-sub service",
   "author": "Fritz Lekschas",
   "keywords": [
