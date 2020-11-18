@@ -1,3 +1,7 @@
+### v2.0.1
+
+- Fix an edge case in async `publish`
+
 ### v2.0.0
 
 - Add option to make the event stack case-insensitive via `createPubSub({ caseInsensitive: true })`

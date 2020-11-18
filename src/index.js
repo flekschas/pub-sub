@@ -85,7 +85,14 @@ const unsubscribe = (stack, { caseInsensitive } = {}) =>
 const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
   const unsubscriber = unsubscribe(stack);
 
+  /**
+   * Factory function for delivering the news
+   * @param {string} event - Event type to be published.
+   * @param {any} news - The news to be published.
+   */
   const createDelivery = (event, news) => () => {
+    if (!stack[event]) return;
+
     stack[event].forEach((listener, i) => {
       listener(news);
       stack.__times__[event][i]--;
