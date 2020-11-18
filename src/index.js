@@ -16,7 +16,7 @@ const bc = (() => {
  * @return {function} - Curried function for subscribing to an event on a
  *   specific event stack.
  */
-const subscribe = (stack) =>
+const subscribe = (stack, { caseInsensitive } = {}) =>
   /**
    * Subscribe to an event.
    * @param {string} event - Event name to subscribe to.
@@ -29,15 +29,17 @@ const subscribe = (stack) =>
    *   can be used to unsubscribe.
    */
   (event, handler, times = Infinity) => {
-    if (!stack[event]) {
-      stack[event] = [];
-      stack.__times__[event] = [];
+    const e = caseInsensitive ? event.toLowerCase() : event;
+
+    if (!stack[e]) {
+      stack[e] = [];
+      stack.__times__[e] = [];
     }
 
-    stack[event].push(handler);
-    stack.__times__[event].push(+times || Infinity);
+    stack[e].push(handler);
+    stack.__times__[e].push(+times || Infinity);
 
-    return { event, handler };
+    return { event: e, handler };
   };
 
 /**
@@ -46,7 +48,7 @@ const subscribe = (stack) =>
  * @return {function} - Curried function for unsubscribing an event from a
  *   specific event stack.
  */
-const unsubscribe = (stack) =>
+const unsubscribe = (stack, { caseInsensitive } = {}) =>
   /**
    * Unsubscribe from event.
    * @curried
@@ -61,14 +63,16 @@ const unsubscribe = (stack) =>
       event = event.event; // eslint-disable-line no-param-reassign
     }
 
-    if (!stack[event]) return;
+    const e = caseInsensitive ? event.toLowerCase() : event;
 
-    const id = stack[event].indexOf(handler);
+    if (!stack[e]) return;
 
-    if (id === -1 || id >= stack[event].length) return;
+    const id = stack[e].indexOf(handler);
 
-    stack[event].splice(id, 1);
-    stack.__times__[event].splice(id, 1);
+    if (id === -1 || id >= stack[e].length) return;
+
+    stack[e].splice(id, 1);
+    stack.__times__[e].splice(id, 1);
   };
 
 /**
@@ -78,7 +82,7 @@ const unsubscribe = (stack) =>
  * @return {function} - Curried function for publishing an event on a specific
  *   event stack.
  */
-const publish = (stack, isGlobal) =>
+const publish = (stack, { isGlobal, caseInsensitive } = {}) =>
   /**
    * Public interface for publishing an event.
    * @curried
@@ -88,23 +92,25 @@ const publish = (stack, isGlobal) =>
    *   broadcasted gloablly even if `isGlobal` is `true`.
    */
   (event, news, isNoGlobalBroadcast) => {
-    if (!stack[event]) return;
+    const e = caseInsensitive ? event.toLowerCase() : event;
+
+    if (!stack[e]) return;
 
     const unsubscriber = unsubscribe(stack);
 
-    stack[event].forEach((listener, i) => {
+    stack[e].forEach((listener, i) => {
       listener(news);
-      stack.__times__[event][i]--;
-      if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
+      stack.__times__[e][i]--;
+      if (stack.__times__[e][i] < 1) unsubscriber(e, listener);
     });
 
     if (isGlobal && !isNoGlobalBroadcast) {
       try {
-        bc.postMessage({ event, news });
+        bc.postMessage({ event: e, news });
       } catch (error) {
         if (error instanceof DOMException) {
           console.warn(
-            `Could not broadcast '${event}' globally. Payload is not clonable.`
+            `Could not broadcast '${e}' globally. Payload is not clonable.`
           );
         } else {
           throw error;
@@ -146,13 +152,16 @@ const createEmptyStack = () => ({ __times__: {} });
  * @param {object} stack - Object to be used as the event stack.
  * @return {object} - A new pub-sub instance.
  */
-const createPubSub = (stack = createEmptyStack()) => {
+const createPubSub = ({
+  caseInsensitive = false,
+  stack = createEmptyStack(),
+} = {}) => {
   if (!stack.__times__) stack.__times__ = {};
 
   return {
-    publish: publish(stack),
-    subscribe: subscribe(stack),
-    unsubscribe: unsubscribe(stack),
+    publish: publish(stack, { caseInsensitive }),
+    subscribe: subscribe(stack, { caseInsensitive }),
+    unsubscribe: unsubscribe(stack, { caseInsensitive }),
     clear: clear(stack),
     stack,
   };
@@ -168,7 +177,7 @@ const globalPubSubStack = createEmptyStack();
  * @type {object}
  */
 const globalPubSub = {
-  publish: publish(globalPubSubStack, true),
+  publish: publish(globalPubSubStack, { isGlobal: true }),
   subscribe: subscribe(globalPubSubStack),
   unsubscribe: unsubscribe(globalPubSubStack),
   stack: globalPubSubStack,
