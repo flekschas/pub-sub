@@ -1,3 +1,12 @@
+### v2.0.0
+
+- Add option to make the event stack case-insensitive via `createPubSub({ caseInsensitive: true })`
+- Add option to make `publish` asynchronous via `createPubSub({ async: true })` (or `pubSub.publish(event, news, { async: true })`)
+
+**Breaking Changes**
+
+- The API of `createPubSub` changed from `createPubSub(customStackObject = {})` to `createPubSub({ async = false, caseInsensitive = false, stack = {} } = {})`
+
 ### v1.2.2
 
 - Fix a bug when using pub-sub-es in an iframe.
