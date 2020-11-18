@@ -82,29 +82,43 @@ const unsubscribe = (stack, { caseInsensitive } = {}) =>
  * @return {function} - Curried function for publishing an event on a specific
  *   event stack.
  */
-const publish = (stack, { isGlobal, caseInsensitive } = {}) =>
+const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
+  const unsubscriber = unsubscribe(stack);
+
+  const createDelivery = (event, news) => () => {
+    stack[event].forEach((listener, i) => {
+      listener(news);
+      stack.__times__[event][i]--;
+      if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
+    });
+  };
+
   /**
    * Public interface for publishing an event.
    * @curried
-   * @param   {string} event - Event type to be published.
-   * @param   {any} news - The news to be published.
-   * @param   {boolean}  isNoGlobalBroadcast - If `true` event will *not* be
-   *   broadcasted gloablly even if `isGlobal` is `true`.
+   * @param {string} event - Event type to be published.
+   * @param {any} news - The news to be published.
+   * @param {object} options - Option object with
+   *   - {boolean} isNoGlobalBroadcast - If `true` event will *not* be
+   *     broadcasted gloablly even if `isGlobal` is `true`.
+   *   - {boolean} async - If `true` event will *not* be broadcasted
+   *     synchronously even if `async` is `false` globally.
    */
-  (event, news, isNoGlobalBroadcast) => {
+  return (event, news, options = {}) => {
     const e = caseInsensitive ? event.toLowerCase() : event;
 
     if (!stack[e]) return;
 
-    const unsubscriber = unsubscribe(stack);
+    const deliver = createDelivery(e, news);
 
-    stack[e].forEach((listener, i) => {
-      listener(news);
-      stack.__times__[e][i]--;
-      if (stack.__times__[e][i] < 1) unsubscriber(e, listener);
-    });
+    if (async || options.async) {
+      // Put the delivery on the top of the event stack
+      setTimeout(deliver, 0);
+    } else {
+      deliver();
+    }
 
-    if (isGlobal && !isNoGlobalBroadcast) {
+    if (isGlobal && !options.isNoGlobalBroadcast) {
       try {
         bc.postMessage({ event: e, news });
       } catch (error) {
@@ -118,6 +132,7 @@ const publish = (stack, { isGlobal, caseInsensitive } = {}) =>
       }
     }
   };
+};
 
 /**
  * Setup event clearer
@@ -153,13 +168,14 @@ const createEmptyStack = () => ({ __times__: {} });
  * @return {object} - A new pub-sub instance.
  */
 const createPubSub = ({
+  async = false,
   caseInsensitive = false,
   stack = createEmptyStack(),
 } = {}) => {
   if (!stack.__times__) stack.__times__ = {};
 
   return {
-    publish: publish(stack, { caseInsensitive }),
+    publish: publish(stack, { async, caseInsensitive }),
     subscribe: subscribe(stack, { caseInsensitive }),
     unsubscribe: unsubscribe(stack, { caseInsensitive }),
     clear: clear(stack),

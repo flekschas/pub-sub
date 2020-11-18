@@ -6,15 +6,13 @@
   "extends": [
     "eslint:recommended",
     "airbnb/base",
-    "plugin:prettier/recommended",
+    "plugin:prettier/recommended"
   ],
   "parserOptions": {
-    "ecmaVersion": 6,
-    "sourceType": "module",
+    "ecmaVersion": 8,
+    "sourceType": "module"
   },
-  "plugins": [
-    "prettier"
-  ],
+  "plugins": ["prettier"],
   "globals": {
     "BroadcastChannel": false
   },

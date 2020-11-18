@@ -1,3 +1,5 @@
+import { wait } from '@flekschas/utils';
+
 const BroadcastChannel = require('broadcast-channel');
 const browserEnv = require('browser-env');
 const test = require('tape');
@@ -268,4 +270,37 @@ test('removes all listeners on clear()', (t) => {
     '`stack.__times__` should no entries anymore'
   );
   t.ok(counter === 1, 'new events should not be handled anymore');
+});
+
+test('test async events', async (t) => {
+  t.plan(5);
+
+  const syncPubSub = createPubSub();
+  const asyncPubSub = createPubSub({ async: true });
+
+  const eventName = 'myEvent';
+
+  let counter = 0;
+  const eventHandler = () => ++counter;
+
+  syncPubSub.subscribe(eventName, eventHandler);
+  syncPubSub.publish(eventName);
+  t.ok(counter === 1, 'should have registered 1 event');
+
+  counter = 0;
+  asyncPubSub.subscribe(eventName, eventHandler);
+  asyncPubSub.publish(eventName);
+  t.ok(counter === 0, 'should have not registered any event');
+
+  await wait(0);
+
+  t.ok(counter === 1, 'NOW should have registered 1 event');
+
+  counter = 0;
+  syncPubSub.publish(eventName, true, { async: true });
+  t.ok(counter === 0, 'should have not registered any event');
+
+  await wait(0);
+
+  t.ok(counter === 1, 'NOW should have registered 1 event');
 });
