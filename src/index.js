@@ -11,6 +11,14 @@ const bc = (() => {
 })();
 
 /**
+ * Get final event name
+ * @param {string} eventName - Event name to be adjusted
+ * @param {boolean} caseInsensitive - If `true`, `eventName` will be lowercased
+ */
+const getEventName = (eventName, caseInsensitive) =>
+  caseInsensitive ? eventName.toLowerCase() : eventName;
+
+/**
  * Setup subscriber.
  * @param {object} stack - The bound event stack.
  * @return {function} - Curried function for subscribing to an event on a
@@ -29,7 +37,7 @@ const subscribe = (stack, { caseInsensitive } = {}) =>
    *   can be used to unsubscribe.
    */
   (event, handler, times = Infinity) => {
-    const e = caseInsensitive ? event.toLowerCase() : event;
+    const e = getEventName(event, caseInsensitive);
 
     if (!stack[e]) {
       stack[e] = [];
@@ -63,7 +71,7 @@ const unsubscribe = (stack, { caseInsensitive } = {}) =>
       event = event.event; // eslint-disable-line no-param-reassign
     }
 
-    const e = caseInsensitive ? event.toLowerCase() : event;
+    const e = getEventName(event, caseInsensitive);
 
     if (!stack[e]) return;
 
@@ -76,6 +84,15 @@ const unsubscribe = (stack, { caseInsensitive } = {}) =>
   };
 
 /**
+ * Inform listeners about some news
+ * @param {array} listeners - List of listeners
+ * @param {*} news - News object
+ */
+const inform = (listeners, news) => () => {
+  listeners.forEach((listener) => listener(news));
+};
+
+/**
  * Setup the publisher.
  * @param  {object} stack - The bound event stack.
  * @param  {boolean} isGlobal - If `true` event will be published globally.
@@ -84,21 +101,6 @@ const unsubscribe = (stack, { caseInsensitive } = {}) =>
  */
 const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
   const unsubscriber = unsubscribe(stack);
-
-  /**
-   * Factory function for delivering the news
-   * @param {string} event - Event type to be published.
-   * @param {any} news - The news to be published.
-   */
-  const createDelivery = (event, news) => () => {
-    if (!stack[event]) return;
-
-    stack[event].forEach((listener, i) => {
-      listener(news);
-      stack.__times__[event][i]--;
-      if (stack.__times__[event][i] < 1) unsubscriber(event, listener);
-    });
-  };
 
   /**
    * Public interface for publishing an event.
@@ -112,17 +114,20 @@ const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
    *     synchronously even if `async` is `false` globally.
    */
   return (event, news, options = {}) => {
-    const e = caseInsensitive ? event.toLowerCase() : event;
+    const e = getEventName(event, caseInsensitive);
 
     if (!stack[e]) return;
 
-    const deliver = createDelivery(e, news);
+    const listeners = [...stack[e]];
+
+    listeners.forEach((listener, i) => {
+      if (--stack.__times__[e][i] < 1) unsubscriber(e, listener);
+    });
 
     if (async || options.async) {
-      // Put the delivery on the top of the event stack
-      setTimeout(deliver, 0);
+      setTimeout(inform(listeners, news), 0);
     } else {
-      deliver();
+      inform(listeners, news)();
     }
 
     if (isGlobal && !options.isNoGlobalBroadcast) {

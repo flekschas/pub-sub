@@ -273,7 +273,7 @@ test('removes all listeners on clear()', (t) => {
 });
 
 test('test async events', async (t) => {
-  t.plan(5);
+  t.plan(6);
 
   const syncPubSub = createPubSub();
   const asyncPubSub = createPubSub({ async: true });
@@ -303,4 +303,14 @@ test('test async events', async (t) => {
   await wait(0);
 
   t.ok(counter === 1, 'NOW should have registered 1 event');
+
+  asyncPubSub.clear();
+  counter = 0;
+  asyncPubSub.subscribe(eventName, eventHandler, 1);
+  asyncPubSub.publish(eventName);
+  asyncPubSub.publish(eventName);
+
+  await wait(0);
+
+  t.ok(counter === 1, 'should have registered 1 event only');
 });
