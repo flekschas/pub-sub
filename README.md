@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/pub-sub-es.svg)](https://www.npmjs.com/package/pub-sub-es)
 [![stability experimental](https://img.shields.io/badge/stability-stable-green.svg)](https://nodejs.org/api/documentation.html#documentation_stability_index)
-[![build status](https://travis-ci.org/flekschas/pub-sub.svg?branch=master)](https://travis-ci.org/flekschas/pub-sub)
+[![build status](https://img.shields.io/github/actions/workflow/status/flekschas/pub-sub/build.yml?branch=master&color=a17fff)](https://github.com/flekschas/pub-sub/actions?query=workflow%3Abuild)
 [![gzipped size](https://img.shields.io/bundlephobia/minzip/pub-sub-es?color=6ae3c7&label=gzipped%20size)](https://unpkg.com/pub-sub-es)
 [![code style prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![demo](https://img.shields.io/badge/demo-online-c15de2.svg)](http://pub-sub.lekschas.de)
