@@ -1,3 +1,7 @@
+### v2.0.2
+
+- Fix an issue with the Broadcast Channel's `publish` call
+
 ### v2.0.1
 
 - Fix an edge case in async `publish`

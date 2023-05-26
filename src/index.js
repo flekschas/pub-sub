@@ -24,7 +24,8 @@ const getEventName = (eventName, caseInsensitive) =>
  * @return {function} - Curried function for subscribing to an event on a
  *   specific event stack.
  */
-const subscribe = (stack, { caseInsensitive } = {}) =>
+const subscribe =
+  (stack, { caseInsensitive } = {}) =>
   /**
    * Subscribe to an event.
    * @param {string} event - Event name to subscribe to.
@@ -56,7 +57,8 @@ const subscribe = (stack, { caseInsensitive } = {}) =>
  * @return {function} - Curried function for unsubscribing an event from a
  *   specific event stack.
  */
-const unsubscribe = (stack, { caseInsensitive } = {}) =>
+const unsubscribe =
+  (stack, { caseInsensitive } = {}) =>
   /**
    * Unsubscribe from event.
    * @curried
@@ -152,7 +154,8 @@ const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
  * @return {function} - A curried function removing all event listeners on a
  *   specific event stack.
  */
-const clear = (stack) =>
+const clear =
+  (stack) =>
   /**
    * Remove all event listeners and unset listening times
    * @curried
@@ -211,7 +214,7 @@ const globalPubSub = {
   stack: globalPubSubStack,
 };
 bc.onmessage = ({ data: { event, news } }) =>
-  globalPubSub.publish(event, news, true);
+  globalPubSub.publish(event, news, { isNoGlobalBroadcast: true });
 
 export { globalPubSub, createPubSub };
 
