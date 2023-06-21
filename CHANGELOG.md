@@ -1,3 +1,8 @@
+### v2.1.0
+
+- Add and publish types
+- Add missing `clear()` function to the global pub sub instance
+
 ### v2.0.2
 
 - Fix an issue with the Broadcast Channel's `publish` call
