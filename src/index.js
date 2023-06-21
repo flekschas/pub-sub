@@ -182,7 +182,7 @@ const createEmptyStack = () => ({ __times__: {} });
  * @typedef {object} PubSubOptions
  * @property {Boolean} async If `true` the pub-sub instance publishes events asynchronously (recommended)
  * @property {Boolean} caseInsensitive If `true` the event names are case insenseitive
- * @property {number} stack A custom event subscriber stack
+ * @property {Stack} stack A custom event subscriber stack
  */
 
 /**
