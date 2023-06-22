@@ -13,7 +13,7 @@
   "license": "MIT",
   "main": "dist/pub-sub.umd.js",
   "module": "dist/pub-sub.js",
-  "types": "dist/pub-sub.d.js",
+  "types": "dist/pub-sub.d.ts",
   "unpkg": "dist/pub-sub.umd.min.js",
   "jsdelivr": "dist/pub-sub.umd.min.js",
   "files": [
