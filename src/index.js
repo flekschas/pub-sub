@@ -19,24 +19,29 @@ const getEventName = (eventName, caseInsensitive) =>
   caseInsensitive ? eventName.toLowerCase() : eventName;
 
 /**
- * @typedef {object} Subscription Event subscription object
- * @property {string} event Event name
- * @property {() => void} handler Event handler
+ * @callback Handler - Event handler function
+ * @param {any} news - Event data
+ * @return {void}
+ */
+
+/**
+ * @typedef {object} Subscription - Event subscription object
+ * @property {string} event - Event name
+ * @property {Handler} handler - Event handler
  */
 
 /**
  * @callback Subscribe
- * @param {string} event Event name to subscribe to.
- * @param {() => void} handler Function to be called when event of type `event` is published.
- * @param {number} times Number of times the handler should called for the given event. The event listener will automatically be unsubscribed once the number of calls exceeds `times`.
+ * @param {string} event - Event name to subscribe to.
+ * @param {Handler} handler - Function to be called when event of type `event` is published.
+ * @param {number} times - Number of times the handler should called for the given event. The event listener will automatically be unsubscribed once the number of calls exceeds `times`.
  * @return {Subscription} Object with the event name and the handler. The object can be used to unsubscribe.
  */
 
 /**
  * Setup subscriber.
  * @param {Stack} stack - The bound event stack.
- * @return {Subscribe} - Curried function for subscribing to an event on a
- *   specific event stack.
+ * @return {Subscribe} Curried function for subscribing to an event on a specific event stack.
  */
 const subscribe =
   (stack, { caseInsensitive } = {}) =>
@@ -56,15 +61,15 @@ const subscribe =
 
 /**
  * @callback Unsubscribe
- * @param {string|Subscription} event Event from which to unsubscribe or the return object provided by `subscribe()`.
- * @param {() => void} handler Handler function to be unsubscribed. It is ignored if `id` is provided.
+ * @param {string|Subscription} event - Event from which to unsubscribe or the return object provided by `subscribe()`.
+ * @param {Handler} handler - Handler function to be unsubscribed. It is ignored if `id` is provided.
  * @returns {void}
  */
 
 /**
  * Setup unsubscriber.
  * @param {Stack} stack - The bound event stack.
- * @return {Unsubscribe} - Curried function for unsubscribing an event from a specific event stack.
+ * @return {Unsubscribe} Curried function for unsubscribing an event from a specific event stack.
  */
 const unsubscribe =
   (stack, { caseInsensitive } = {}) =>
@@ -97,15 +102,15 @@ const inform = (listeners, news) => () => {
 
 /**
  * @typedef {object} PublishOptions
- * @property {Boolean} isNoGlobalBroadcast If `true` event will *not* be broadcasted gloablly even if `isGlobal` is `true`.
- * @property {Boolean} async If `true` event will *not* be broadcasted synchronously even if `async` is `false` globally.
+ * @property {Boolean} isNoGlobalBroadcast - If `true` event will *not* be broadcasted gloablly even if `isGlobal` is `true`.
+ * @property {Boolean} async - If `true` event will *not* be broadcasted synchronously even if `async` is `false` globally.
  */
 
 /**
  * @callback Publish
- * @param {string} event Event type to be published.
- * @param {any} news The news to be published.
- * @param {PublishOptions} options Publishing options
+ * @param {string} event - Event type to be published.
+ * @param {any} news - The news to be published.
+ * @param {PublishOptions} options - Publishing options
  * @returns {void}
  */
 
@@ -113,7 +118,7 @@ const inform = (listeners, news) => () => {
  * Setup the publisher.
  * @param {Stack} stack - The bound event stack.
  * @param {Boolean} isGlobal - If `true` event will be published globally.
- * @return {Publish} - Curried function for publishing an event on a specific event stack.
+ * @return {Publish} Curried function for publishing an event on a specific event stack.
  */
 const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
   const unsubscriber = unsubscribe(stack);
@@ -151,10 +156,14 @@ const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
 };
 
 /**
+ * @callback Clear - Remove all event listeners
+ * @return {void}
+ */
+
+/**
  * Setup event clearer
  * @param {Stack} stack - The bound event stack.
- * @return {() => void} - A curried function removing all event listeners on a
- *   specific event stack.
+ * @return {Clear} A curried function removing all event listeners on a specific event stack.
  */
 const clear = (stack) => () => {
   Object.keys(stack)
@@ -168,13 +177,12 @@ const clear = (stack) => () => {
 };
 
 /**
- * @typedef {Record<string, (() => void)[]>} Stack
- * @property {Record<string, number[]>} __times__ The number of times one wants to subscribe to an event
+ * @typedef {{ [event: string]: Handler[], __times__: { [event: string]: number[] }} Stack
  */
 
 /**
  * Create a new empty stack object
- * @return {Stack} - An empty stack object.
+ * @return {Stack} An empty stack object.
  */
 const createEmptyStack = () => ({ __times__: {} });
 
@@ -187,11 +195,11 @@ const createEmptyStack = () => ({ __times__: {} });
 
 /**
  * @typedef {object} PubSub
- * @property {Boolean} publish A function to publish an event
- * @property {Boolean} subscribe A function for subscribing to an event
- * @property {number} unsubscribe A function for unsubscribing from an event
- * @property {number} clear A function for clearing all event subscribers
- * @property {number} stack The event subscriber stack
+ * @property {Publish} publish - A function to publish an event
+ * @property {Subscribe} subscribe - A function for subscribing to an event
+ * @property {Unsubscribe} unsubscribe - A function for unsubscribing from an event
+ * @property {Clear} clear - A function for clearing all event subscribers
+ * @property {Stack} stack - The event subscriber stack
  */
 
 /**

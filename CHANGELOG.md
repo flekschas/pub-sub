@@ -1,3 +1,7 @@
+### v2.1.1
+
+- Fix several type definitions
+
 ### v2.1.0
 
 - Add and publish types
