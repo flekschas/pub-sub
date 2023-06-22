@@ -31,7 +31,7 @@ const getEventName = (eventName, caseInsensitive) =>
  */
 
 /**
- * @callback Subscribe
+ * @callback Subscribe - Function to subscribe to an event
  * @param {string} event - Event name to subscribe to.
  * @param {Handler} handler - Function to be called when event of type `event` is published.
  * @param {number} times - Number of times the handler should called for the given event. The event listener will automatically be unsubscribed once the number of calls exceeds `times`.
@@ -39,7 +39,7 @@ const getEventName = (eventName, caseInsensitive) =>
  */
 
 /**
- * Setup subscriber.
+ * Setup subscriber
  * @param {Stack} stack - The bound event stack.
  * @return {Subscribe} Curried function for subscribing to an event on a specific event stack.
  */
@@ -60,14 +60,14 @@ const subscribe =
   };
 
 /**
- * @callback Unsubscribe
+ * @callback Unsubscribe - Function to unsubscribe from an event
  * @param {string|Subscription} event - Event from which to unsubscribe or the return object provided by `subscribe()`.
  * @param {Handler} handler - Handler function to be unsubscribed. It is ignored if `id` is provided.
  * @returns {void}
  */
 
 /**
- * Setup unsubscriber.
+ * Setup unsubscriber
  * @param {Stack} stack - The bound event stack.
  * @return {Unsubscribe} Curried function for unsubscribing an event from a specific event stack.
  */
@@ -101,13 +101,13 @@ const inform = (listeners, news) => () => {
 };
 
 /**
- * @typedef {object} PublishOptions
+ * @typedef {object} PublishOptions - Options for how to publish an event
  * @property {Boolean} isNoGlobalBroadcast - If `true` event will *not* be broadcasted gloablly even if `isGlobal` is `true`.
  * @property {Boolean} async - If `true` event will *not* be broadcasted synchronously even if `async` is `false` globally.
  */
 
 /**
- * @callback Publish
+ * @callback Publish - Function to publish an event
  * @param {string} event - Event type to be published.
  * @param {any} news - The news to be published.
  * @param {PublishOptions} options - Publishing options
@@ -177,7 +177,23 @@ const clear = (stack) => () => {
 };
 
 /**
- * @typedef {{ [event: string]: Handler[], __times__: { [event: string]: number[] }} Stack
+ * @typedef {{ [event: string]: Handler[], __times__: { [event: string]: number[] }} Stack - Event stack object that stores the events handers and notification times
+ */
+
+/**
+ * @typedef {object} PubSubOptions - Options for customizing the pub-sub instance
+ * @property {Boolean} async If `true` the pub-sub instance publishes events asynchronously (recommended)
+ * @property {Boolean} caseInsensitive If `true` the event names are case insenseitive
+ * @property {Stack} stack A custom event subscriber stack
+ */
+
+/**
+ * @typedef {object} PubSub - The pub-sub instance
+ * @property {Publish} publish - A function to publish an event
+ * @property {Subscribe} subscribe - A function for subscribing to an event
+ * @property {Unsubscribe} unsubscribe - A function for unsubscribing from an event
+ * @property {Clear} clear - A function for clearing all event subscribers
+ * @property {Stack} stack - The event subscriber stack
  */
 
 /**
@@ -185,22 +201,6 @@ const clear = (stack) => () => {
  * @return {Stack} An empty stack object.
  */
 const createEmptyStack = () => ({ __times__: {} });
-
-/**
- * @typedef {object} PubSubOptions
- * @property {Boolean} async If `true` the pub-sub instance publishes events asynchronously (recommended)
- * @property {Boolean} caseInsensitive If `true` the event names are case insenseitive
- * @property {Stack} stack A custom event subscriber stack
- */
-
-/**
- * @typedef {object} PubSub
- * @property {Publish} publish - A function to publish an event
- * @property {Subscribe} subscribe - A function for subscribing to an event
- * @property {Unsubscribe} unsubscribe - A function for unsubscribing from an event
- * @property {Clear} clear - A function for clearing all event subscribers
- * @property {Stack} stack - The event subscriber stack
- */
 
 /**
  * Create a new pub-sub instance
@@ -229,7 +229,7 @@ const createPubSub = (options = {}) => {
 const globalPubSubStack = createEmptyStack();
 
 /**
- * Global pub-sub stack instance
+ * Global pub-sub instance
  * @type {PubSub}
  */
 const globalPubSub = {
