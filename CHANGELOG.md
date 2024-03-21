@@ -1,3 +1,8 @@
+### v2.1.2
+
+- Fix a typo in `types` of `package.json` to point to the correct type definitions
+- Further improve some type descriptions
+
 ### v2.1.1
 
 - Fix several type definitions

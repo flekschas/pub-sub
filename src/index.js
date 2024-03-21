@@ -19,31 +19,45 @@ const getEventName = (eventName, caseInsensitive) =>
   caseInsensitive ? eventName.toLowerCase() : eventName;
 
 /**
- * @callback Handler - Event handler function
- * @param {any} news - Event data
- * @return {void}
+ * @typedef {{ [Key in EventName]: Payload }} Event
+ * @template {string} [EventName=string]
+ * @template {unknown} [Payload=unknown]
  */
 
 /**
- * @typedef {object} Subscription - Event subscription object
- * @property {string} event - Event name
- * @property {Handler} handler - Event handler
+ * @typedef {(news: T[Key]) => void} Handler - Event handler function
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
  */
 
 /**
- * @callback Subscribe - Function to subscribe to an event
- * @param {string} event - Event name to subscribe to.
- * @param {Handler} handler - Function to be called when event of type `event` is published.
- * @param {number} times - Number of times the handler should called for the given event. The event listener will automatically be unsubscribed once the number of calls exceeds `times`.
- * @return {Subscription} Object with the event name and the handler. The object can be used to unsubscribe.
+ * @typedef {{ event: Key, handler: Handler<T, Key> }} Subscription - Event subscription object
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
+ */
+
+/**
+ * @typedef {(event: Key, handler: Handler<T, Key>, times?: number) => Subscription<T, Key>} Subscribe - Function to subscribe to an event
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
+ */
+
+/**
+ * @typedef {object} CreateSubscribeOptions - Options for customizing the subscriber factory
+ * @property {Boolean} caseInsensitive - If `true` the event names are case insenseitive
+ */
+
+/**
+ * @typedef {(stack: Stack<T>, options?: CreateSubscribeOptions) => Subscribe<T, Key>} CreateSubscribe - Factory function for `subscribe()`
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
  */
 
 /**
  * Setup subscriber
- * @param {Stack} stack - The bound event stack.
- * @return {Subscribe} Curried function for subscribing to an event on a specific event stack.
+ * @type {CreateSubscribe}
  */
-const subscribe =
+const createSubscribe =
   (stack, { caseInsensitive } = {}) =>
   (event, handler, times = Infinity) => {
     const e = getEventName(event, caseInsensitive);
@@ -60,18 +74,27 @@ const subscribe =
   };
 
 /**
- * @callback Unsubscribe - Function to unsubscribe from an event
- * @param {string|Subscription} event - Event from which to unsubscribe or the return object provided by `subscribe()`.
- * @param {Handler} handler - Handler function to be unsubscribed. It is ignored if `id` is provided.
- * @returns {void}
+ * @typedef {(event: Key | Subscription<T, Key>, handler?: Handler<T, Key>) => void} Unsubscribe - Function to unsubscribe from an event
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
+ */
+
+/**
+ * @typedef {object} CreateUnsubscribeOptions - Options for customizing the unsubscriber factory
+ * @property {Boolean} caseInsensitive - If `true` the event names are case insenseitive
+ */
+
+/**
+ * @typedef {(stack: Stack<T>, options?: CreateUnsubscribeOptions) => Unsubscribe<T, Key>} CreateUnsubscribe - Factory function for `unsubscribe()`
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
  */
 
 /**
  * Setup unsubscriber
- * @param {Stack} stack - The bound event stack.
- * @return {Unsubscribe} Curried function for unsubscribing an event from a specific event stack.
+ * @type {CreateUnsubscribe}
  */
-const unsubscribe =
+const createUnsubscribe =
   (stack, { caseInsensitive } = {}) =>
   (event, handler) => {
     if (typeof event === 'object') {
@@ -92,9 +115,14 @@ const unsubscribe =
   };
 
 /**
+ * @typedef {(listeners: (Handler<T, Key>)[], news: T[Key]) => void} Inform - Inform listeners about some news
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
+ */
+
+/**
  * Inform listeners about some news
- * @param {(() => void)[]} listeners - List of listeners
- * @param {any} news - News object
+ * @type {Inform}
  */
 const inform = (listeners, news) => () => {
   listeners.forEach((listener) => listener(news));
@@ -107,21 +135,29 @@ const inform = (listeners, news) => () => {
  */
 
 /**
- * @callback Publish - Function to publish an event
- * @param {string} event - Event type to be published.
- * @param {any} news - The news to be published.
- * @param {PublishOptions} options - Publishing options
- * @returns {void}
+ * @typedef {(event: Key, news: T[Key], options?: PublishOptions) => void} Publish - Function to publish an event
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
+ */
+
+/**
+ * @typedef {object} CreatePublishOptions - Factory function for `publish()`
+ * @property {Boolean} isGlobal - If `true` event will be published globally.
+ * @property {Boolean} caseInsensitive - If `true` the event names are case insenseitive
+ * @property {Boolean} async - If `true` the pub-sub instance publishes events asynchronously (recommended)
+ */
+
+/**
+ * @typedef {(stack: Stack<T>, options?: CreatePublishOptions) => Publish<T>} CreatePublish - Factory function for `publish()`
+ * @template {Event} [T=Event]
  */
 
 /**
  * Setup the publisher.
- * @param {Stack} stack - The bound event stack.
- * @param {Boolean} isGlobal - If `true` event will be published globally.
- * @return {Publish} Curried function for publishing an event on a specific event stack.
+ * @type {CreatePublish}
  */
-const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
-  const unsubscriber = unsubscribe(stack);
+const createPublish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
+  const unsubscribe = createUnsubscribe(stack);
   return (event, news, options = {}) => {
     const e = getEventName(event, caseInsensitive);
 
@@ -130,7 +166,7 @@ const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
     const listeners = [...stack[e]];
 
     listeners.forEach((listener, i) => {
-      if (--stack.__times__[e][i] < 1) unsubscriber(e, listener);
+      if (--stack.__times__[e][i] < 1) unsubscribe(e, listener);
     });
 
     if (async || options.async) {
@@ -161,11 +197,15 @@ const publish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
  */
 
 /**
- * Setup event clearer
- * @param {Stack} stack - The bound event stack.
- * @return {Clear} A curried function removing all event listeners on a specific event stack.
+ * @typedef {(stack: Stack<T>) => Clear} CreateClear - Factory function for `clear()`
+ * @template {Event} [T=Event]
  */
-const clear = (stack) => () => {
+
+/**
+ * Setup event clearer
+ * @type {CreateClear}
+ */
+const createClear = (stack) => () => {
   Object.keys(stack)
     .filter((eventName) => eventName[0] !== '_')
     .forEach((eventName) => {
@@ -177,35 +217,42 @@ const clear = (stack) => () => {
 };
 
 /**
- * @typedef {{ [event: string]: Handler[], __times__: { [event: string]: number[] }} Stack - Event stack object that stores the events handers and notification times
+ * @typedef {{ [event: Key]: (Handler<T, Key>)[], __times__: { [event: Key]: number[] }} Stack - Event stack object that stores the events handers and notification times
+ * @template {Event} [T=Event]
+ * @template {keyof T} Key
  */
 
 /**
  * @typedef {object} PubSubOptions - Options for customizing the pub-sub instance
- * @property {Boolean} async If `true` the pub-sub instance publishes events asynchronously (recommended)
- * @property {Boolean} caseInsensitive If `true` the event names are case insenseitive
+ * @property {Boolean} async - If `true` the pub-sub instance publishes events asynchronously (recommended)
+ * @property {Boolean} caseInsensitive - If `true` the event names are case insenseitive
  * @property {Stack} stack A custom event subscriber stack
  */
 
 /**
- * @typedef {object} PubSub - The pub-sub instance
- * @property {Publish} publish - A function to publish an event
- * @property {Subscribe} subscribe - A function for subscribing to an event
- * @property {Unsubscribe} unsubscribe - A function for unsubscribing from an event
- * @property {Clear} clear - A function for clearing all event subscribers
- * @property {Stack} stack - The event subscriber stack
+ * @typedef {{ publish: Publish<Event>, subscribe: Subscribe<Event>, unsubscribe: Unsubscribe<Event>, clear: Clear, stack: Stack }} PubSub - The pub-sub instance
+ * @template {Event} [T=Event]
+ */
+
+/**
+ * @typedef {() => Stack<T>} CreateStack - Create a new empty stack object
+ * @template {Event} [T=Event]
  */
 
 /**
  * Create a new empty stack object
- * @return {Stack} An empty stack object.
+ * @type {CreateStack}
  */
 const createEmptyStack = () => ({ __times__: {} });
 
 /**
+ * @typedef {(options?: PubSubOptions) => PubSub<T>} CreatePubSub - Create a new pub-sub instance
+ * @template {Event} [T=Event]
+ */
+
+/**
  * Create a new pub-sub instance
- * @param {PubSubOptions} options - Object to be used as the event stack.
- * @return {PubSub} New pub-sub instance.
+ * @type {CreatePubSub}
  */
 const createPubSub = (options = {}) => {
   const async = options.async || false;
@@ -215,10 +262,10 @@ const createPubSub = (options = {}) => {
   if (!stack.__times__) stack.__times__ = {};
 
   return {
-    publish: publish(stack, { async, caseInsensitive }),
-    subscribe: subscribe(stack, { caseInsensitive }),
-    unsubscribe: unsubscribe(stack, { caseInsensitive }),
-    clear: clear(stack),
+    publish: createPublish(stack, { async, caseInsensitive }),
+    subscribe: createSubscribe(stack, { caseInsensitive }),
+    unsubscribe: createUnsubscribe(stack, { caseInsensitive }),
+    clear: createClear(stack),
     stack,
   };
 };
@@ -233,10 +280,10 @@ const globalPubSubStack = createEmptyStack();
  * @type {PubSub}
  */
 const globalPubSub = {
-  publish: publish(globalPubSubStack, { isGlobal: true }),
-  subscribe: subscribe(globalPubSubStack),
-  unsubscribe: unsubscribe(globalPubSubStack),
-  clear: clear(globalPubSubStack),
+  publish: createPublish(globalPubSubStack, { isGlobal: true }),
+  subscribe: createSubscribe(globalPubSubStack),
+  unsubscribe: createUnsubscribe(globalPubSubStack),
+  clear: createClear(globalPubSubStack),
   stack: globalPubSubStack,
 };
 
