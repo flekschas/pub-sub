@@ -1,5 +1,6 @@
 ### v2.1.2
 
+- Fix behavior of `publish`'s `async` option. The option will now override the globally specified behavior.
 - Fix a typo in `types` of `package.json` to point to the correct type definitions
 - Further improve some type descriptions
 

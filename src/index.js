@@ -48,7 +48,7 @@ const getEventName = (eventName, caseInsensitive) =>
  */
 
 /**
- * @typedef {(stack: Stack<T>, options?: CreateSubscribeOptions) => Subscribe<T, Key>} CreateSubscribe - Factory function for `subscribe()`
+ * @typedef {(stack: Stack<T>, options?: Partial<CreateSubscribeOptions>) => Subscribe<T, Key>} CreateSubscribe - Factory function for `subscribe()`
  * @template {Event} [T=Event]
  * @template {keyof T} Key
  */
@@ -85,7 +85,7 @@ const createSubscribe =
  */
 
 /**
- * @typedef {(stack: Stack<T>, options?: CreateUnsubscribeOptions) => Unsubscribe<T, Key>} CreateUnsubscribe - Factory function for `unsubscribe()`
+ * @typedef {(stack: Stack<T>, options?: Partial<CreateUnsubscribeOptions>) => Unsubscribe<T, Key>} CreateUnsubscribe - Factory function for `unsubscribe()`
  * @template {Event} [T=Event]
  * @template {keyof T} Key
  */
@@ -135,7 +135,7 @@ const inform = (listeners, news) => () => {
  */
 
 /**
- * @typedef {(event: Key, news: T[Key], options?: PublishOptions) => void} Publish - Function to publish an event
+ * @typedef {(event: Key, news: T[Key], options?: Partial<PublishOptions>) => void} Publish - Function to publish an event
  * @template {Event} [T=Event]
  * @template {keyof T} Key
  */
@@ -148,7 +148,7 @@ const inform = (listeners, news) => () => {
  */
 
 /**
- * @typedef {(stack: Stack<T>, options?: CreatePublishOptions) => Publish<T>} CreatePublish - Factory function for `publish()`
+ * @typedef {(stack: Stack<T>, options?: Partial<CreatePublishOptions>) => Publish<T>} CreatePublish - Factory function for `publish()`
  * @template {Event} [T=Event]
  */
 
@@ -169,7 +169,9 @@ const createPublish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
       if (--stack.__times__[e][i] < 1) unsubscribe(e, listener);
     });
 
-    if (async || options.async) {
+    const localAsync = options.async !== undefined ? options.async : async;
+
+    if (localAsync) {
       setTimeout(inform(listeners, news), 0);
     } else {
       inform(listeners, news)();
@@ -246,7 +248,7 @@ const createClear = (stack) => () => {
 const createEmptyStack = () => ({ __times__: {} });
 
 /**
- * @typedef {(options?: PubSubOptions) => PubSub<T>} CreatePubSub - Create a new pub-sub instance
+ * @typedef {(options?: Partial<PubSubOptions>) => PubSub<T>} CreatePubSub - Create a new pub-sub instance
  * @template {Event} [T=Event]
  */
 
