@@ -183,7 +183,7 @@ const createPublish = (stack, { isGlobal, caseInsensitive, async } = {}) => {
       } catch (error) {
         if (error instanceof DOMException) {
           console.warn(
-            `Could not broadcast '${e}' globally. Payload is not clonable.`
+            `Could not broadcast '${e}' globally. Payload is not clonable.`,
           );
         } else {
           throw error;
