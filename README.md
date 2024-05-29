@@ -58,20 +58,29 @@ With this, we established that `pubSub` will handle four events:
 - `solution` features a single `number` as payload
 - `selection` features an array of numbers as payload
 
-When you listen to an event, the payload will now be typed. I.e.:
+When you listen to or publish an event, the payload will now be typed based of the event. I.e.:
 
 ```typescript
-pubSub.subscribe('solution', (payload) => console.log(payload + 2));
+pubSub.subscribe('destroy', (payload) => payload === undefined); // => ✅
+pubSub.subscribe('destroy', (payload) => payload * 2); // => ❌
+pubSub.subscribe('solution', (payload) => console.log(payload + 2)); // => ✅
+pubSub.subscribe('solution', (payload) => console.log(payload.length)); // => ❌
+pubSub.subscribe('selection', (payload) => console.log(payload.length)); // => ✅
+pubSub.subscribe('selection', (payload) => console.log(payload * 2)); // => ❌
 
+pubSub.publish('init'); // => ✅
+pubSub.publish('init', 'w00t'); // => ❌
 pubSub.publish('solution', 42); // => ✅
 pubSub.publish('solution', '42'); // => ❌
+pubSub.publish('selection', [1,3,3,7]); // => ✅
+pubSub.publish('selection', 1337); // => ❌
 ```
 
 ## API
 
 `pub-sub-es` exports the factory function (`createPubSub`) for creating a new pub-sub service by default and a global pub-sub service (`globalPubSub`). The API is the same for both.
 
-#### `createPubSub(options = { async: false, caseInsensitive: false, stack: { __times__: {} })`
+#### `createPubSub(options = { async: false, caseInsensitive: false, stack: {})`
 
 > Creates a new pub-sub instances
 
@@ -106,11 +115,12 @@ pubSub.publish('solution', '42'); // => ❌
 
 **Returns:** an object of form `{ event, handler }`. This object can be used to automatically unsubscribe, e.g., `pubSub.unsubscribe(pubSub.subscribe('my-event', myHandler))`.
 
-#### `pubSub.unsubscribe(event)`
+#### `pubSub.unsubscribe(eventOrSubscription, handler?)`
 
 > Unsubscribes a handler from listening to an event
 
-- `event` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`.
+- `eventOrSubscription` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`.
+- `handler` is the event handler function to be unsubscribed from the event
 
 #### `pubSub.clear()`
 
@@ -121,12 +131,12 @@ _Note: this endpoint is not available on the global pub-sub because it could hav
 ### Between-context messaging
 
 The global pub-sub instance is created when `pub-sub-es.js` is loaded and provides a way for
-global messaging within and between contexts. It utilizes the [Broadcast Channel API](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel), which is [currently not available in all browsers](https://caniuse.com/#feat=broadcastchannel). If you need to support more browsers you have to load a [polyfill](https://gist.github.com/alexis89x/041a8e20a9193f3c47fb). PubSubES is _not_ taking care of that! Also, when sending sending objects from one context to another you have to make sure that they are clonable. For example, trying to broadcast a reference to a DOM element will fail.
+global messaging within and between contexts. It utilizes the [Broadcast Channel API](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel). Note, when sending sending objects from one context to another you have to make sure that they are cloneable. For example, trying to broadcast a reference to a DOM element will fail.
 
-## Difference to other pub-sub llibraries
+## Difference to other pub-sub libraries
 
 You might have come across the awesome [PubSubJS](https://github.com/mroderick/PubSubJS) library and wonder which one to choose. First of all, both are tiny, have no dependencies, and offer async event broadcasting. The two main features that PubSubES offers are:
 
-1. Auto-unsubscribable event listening: via `pubSub.subscribe(eventName, eventHandler, t)` you can make the `eventHandler` unsubscribed from `eventName` automatically after `eventName` was broadcasted `t` times.
+1. Auto-unsubscribable event listening: via `pubSub.subscribe(eventName, eventHandler, times)` you can make the `eventHandler` unsubscribed from `eventName` automatically after `eventName` was broadcasted `times` times.
 
 2. Between-context messaging: PubSubES supports the new Broadcast Channel API so you can send events between different browser contexts, e.g., tabs.
