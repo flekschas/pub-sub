@@ -19,6 +19,6 @@ jobs:
     - name: 'Install Deps'
       run: npm ci
     - name: 'Test'
-      run: npx vitest --coverage.enabled true
+      run: npx vitest --environment=happy-dom --coverage.enabled true
     - name: 'Report Coverage'
       uses:  davelosert/vitest-coverage-report-action@v2
