@@ -26,14 +26,45 @@ import createPubSub from 'pub-sub-es';
 const pubSub = createPubSub();
 
 // Subscribe to an event
-const myEmojiEventHandler = msg => console.log(`🎉 ${msg} 😍`);
-pubSub.on('my-emoji-event', myEmojiEventHandler);
+const myEmojiEventHandler = (msg) => console.log(`🎉 ${msg} 😍`);
+pubSub.subscribe('my-emoji-event', myEmojiEventHandler);
 
 // Publish an event
-pubSub.publish('my-emoji-event', 'Yuuhuu');  // >> 🎉 Yuuhuu 😍
+pubSub.publish('my-emoji-event', 'Yuuhuu'); // >> 🎉 Yuuhuu 😍
 
 // Unsubscribe
 pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
+```
+
+### Type Events
+
+By default, `pub-sub` assumes you are publishing any kind of events with an
+unknown payload. With TypeScript you can specify which events (name and payload)
+you are publishing as follows.
+
+```typescript
+import createPubSub, { Event } from 'pub-sub-es';
+
+type Events = Event<'init' | 'destroy', undefined> &
+  Event<'solution', number> &
+  Event<'selection', number[]>;
+
+const pubSub = createPubSub<Events>();
+```
+
+With this, we established that `pubSub` will handle four events:
+
+- `init` and `destroy` feature no payload (i.e., the payload is `undefined`)
+- `solution` features a single `number` as payload
+- `selection` features an array of numbers as payload
+
+When you listen to an event, the payload will now be typed. I.e.:
+
+```typescript
+pubSub.subscribe('solution', (payload) => console.log(payload + 2));
+
+pubSub.publish('solution', 42); // => ✅
+pubSub.publish('solution', '42'); // => ❌
 ```
 
 ## API
@@ -45,10 +76,11 @@ pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 > Creates a new pub-sub instances
 
 **Arguments:**
+
 - `options` is an object for customizing pubSub. The following properties are understood:
-   - `async`: when `true`, events are published asynchronously to decouple the process of the originator and consumer.
-   - `caseInsensitive`: when `true`, event names are case insensitive
-   - `stack`: is an object holding the event listeners and defaults to a new stack when being omitted.
+  - `async`: when `true`, events are published asynchronously to decouple the process of the originator and consumer.
+  - `caseInsensitive`: when `true`, event names are case insensitive
+  - `stack`: is an object holding the event listeners and defaults to a new stack when being omitted.
 
 **Returns:** a new pub-sub service
 
@@ -57,11 +89,12 @@ pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 > Publishes or broadcasts an event with some news or payload
 
 **Arguments:**
+
 - `event` is the name of the event to be published.
 - `news` is an arbitrary value that is being broadcasted.
 - `options` is an object for customizing the behavior. The following properties are understood:
-   - `async`: overrides the global `async` flag for a single call.
-   - `isNoGlobalBroadcast`: overrides the global `isGlobal` flag for a single call.
+  - `async`: overrides the global `async` flag for a single call.
+  - `isNoGlobalBroadcast`: overrides the global `isGlobal` flag for a single call.
 
 #### `pubSub.subscribe(event, handler, times)`
 
@@ -77,7 +110,7 @@ pubSub.unsubscribe('my-emoji-event', myEmojiEventHandler);
 
 > Unsubscribes a handler from listening to an event
 
-- `event` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`. 
+- `event` is the name of the event to be published. Optionally, `unsubscribe` accepts an object of form `{ event, handler}` coming from `subscribe`.
 
 #### `pubSub.clear()`
 

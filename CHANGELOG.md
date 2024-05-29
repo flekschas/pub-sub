@@ -1,3 +1,11 @@
+### v3.0.0
+
+- Rewrote the whole library in TypeScript to finally fix all the type issues.
+
+**Breaking Changes**
+
+- Stop publishing UMD modules
+
 ### v2.1.2
 
 - Fix behavior of `publish`'s `async` option. The option will now override the globally specified behavior.
