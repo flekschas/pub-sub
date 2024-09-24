@@ -277,7 +277,11 @@ const createPublish = <T extends Event>(
 		 */
 		const inform = () => {
 			for (const listener of listeners) {
-				listener.handler(news as T[Key]);
+				try {
+					listener.handler(news as T[Key]);
+				} catch(error) {
+					console.error(error);
+				}
 			}
 		};
 
