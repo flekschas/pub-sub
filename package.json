@@ -32,7 +32,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.7.3",
     "@vitest/coverage-v8": "^1.6.0",
-    "happy-dom": "^14.11.0",
+    "happy-dom": "^15.10.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.12",
     "vite-plugin-html": "^3.2.2",
